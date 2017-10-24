@@ -11,9 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import com.google.firebase.analytics.FirebaseAnalytics
 import java.math.BigDecimal
 
 class ValuesFragment : Fragment() {
+    private lateinit var fbAnalytics: FirebaseAnalytics
     private lateinit var bill: EditText
     private lateinit var percentTip: EditText
     private lateinit var tip: TextView
@@ -23,6 +25,8 @@ class ValuesFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_values,
                                     container,
                                     false)
+        fbAnalytics = FirebaseAnalytics.getInstance(context)
+
         bill = view.findViewById(R.id.bill)
         percentTip = view.findViewById(R.id.percent)
         tip = view.findViewById(R.id.tip)
@@ -39,6 +43,11 @@ class ValuesFragment : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val bundle = Bundle()
+                bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                 p0.toString())
+                fbAnalytics.logEvent("change_bill",
+                                     bundle)
                 makeCalc()
             }
 
@@ -52,10 +61,15 @@ class ValuesFragment : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val percentText: Editable = percentTip.text
+                val percentText: String = percentTip.text.toString()
+
+                val bundle = Bundle()
+                bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                 percentText)
                 prefs.edit().putString("percent",
-                                       percentText.substring(0,
-                                                             percentText.length)).apply()
+                                       percentText).apply()
+                fbAnalytics.logEvent("change_percent",
+                                     bundle)
                 makeCalc()
             }
 
@@ -83,6 +97,14 @@ class ValuesFragment : Fragment() {
         val totalText = "\$$fTotal"
         tip.text = tipText
         total.text = totalText
+
+        val bundle = Bundle()
+        bundle.putDouble("tip",
+                         fTip)
+        bundle.putDouble("total",
+                         fTotal)
+        fbAnalytics.logEvent("calculate_totals",
+                             bundle)
     }
 
 }

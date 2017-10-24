@@ -5,13 +5,18 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 
 class MainActivity : AppCompatActivity() {
-
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         val valuesFrag: Fragment = ValuesFragment()
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN,
+                                   null)
         addFragment(valuesFrag, R.id.frag_container)
     }
 }
