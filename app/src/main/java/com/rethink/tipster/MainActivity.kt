@@ -1,10 +1,13 @@
 package com.rethink.tipster
 
-import android.support.v7.app.AppCompatActivity
+import android.app.Activity
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
+import android.support.v7.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +25,9 @@ inline fun FragmentManager.inTransaction(func: FragmentTransaction.() -> Fragmen
     fragmentTransaction.commit()
 }
 
-fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int){
-    supportFragmentManager.inTransaction { add(frameId, fragment) }
+fun AppCompatActivity.addFragment(fragment: Fragment, frameId: Int) {
+    supportFragmentManager.inTransaction {
+        add(frameId,
+            fragment)
+    }
 }

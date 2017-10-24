@@ -1,5 +1,7 @@
 package com.rethink.tipster
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.Editable
@@ -25,6 +27,9 @@ class ValuesFragment : Fragment() {
         percentTip = view.findViewById(R.id.percent)
         tip = view.findViewById(R.id.tip)
         total = view.findViewById(R.id.total)
+        val prefs: SharedPreferences = activity.getPreferences(Context.MODE_PRIVATE)
+        percentTip.setText(prefs.getString("percent",
+                                           ""))
 
         bill.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -47,6 +52,10 @@ class ValuesFragment : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                val percentText: Editable = percentTip.text
+                prefs.edit().putString("percent",
+                                       percentText.substring(0,
+                                                             percentText.length)).apply()
                 makeCalc()
             }
 
@@ -56,7 +65,8 @@ class ValuesFragment : Fragment() {
     }
 
     private fun Double.roundTo2DecimalPlaces() =
-            BigDecimal(this).setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
+            BigDecimal(this).setScale(2,
+                                      BigDecimal.ROUND_HALF_UP).toDouble()
 
     fun makeCalc() {
         var fBill = 0.0
