@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crash.FirebaseCrash
 
 class MainActivity : AppCompatActivity() {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -14,6 +15,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        // Don't collect info if this is a debug build
+        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG)
+        firebaseAnalytics.setAnalyticsCollectionEnabled(!BuildConfig.DEBUG)
+
         val valuesFrag: Fragment = ValuesFragment()
         firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN,
                                    null)
