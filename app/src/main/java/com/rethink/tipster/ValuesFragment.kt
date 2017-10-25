@@ -11,15 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.FirebaseAnalytics
 import java.math.BigDecimal
 
 class ValuesFragment : Fragment() {
+    private val TAG: String = "ValuesFragment"
     private lateinit var fbAnalytics: FirebaseAnalytics
     private lateinit var bill: EditText
     private lateinit var percentTip: EditText
     private lateinit var tip: TextView
     private lateinit var total: TextView
+    private lateinit var adView: AdView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_values,
@@ -31,6 +35,10 @@ class ValuesFragment : Fragment() {
         percentTip = view.findViewById(R.id.percent)
         tip = view.findViewById(R.id.tip)
         total = view.findViewById(R.id.total)
+        adView = view.findViewById(R.id.ad_view)
+        val adRequest: AdRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
         val prefs: SharedPreferences = activity.getPreferences(Context.MODE_PRIVATE)
         percentTip.setText(prefs.getString("percent",
                                            ""))
