@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -22,7 +23,7 @@ class ValuesFragment : Fragment() {
     private lateinit var bill: EditText
     private lateinit var percentTip: EditText
     private lateinit var tip: TextView
-    private lateinit var total: TextView
+    private lateinit var summary: TextView
     private lateinit var adView: AdView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -33,8 +34,7 @@ class ValuesFragment : Fragment() {
 
         bill = view.findViewById(R.id.bill)
         percentTip = view.findViewById(R.id.percent)
-        tip = view.findViewById(R.id.tip)
-        total = view.findViewById(R.id.total)
+        summary = view.findViewById(R.id.summary)
         adView = view.findViewById(R.id.ad_view)
         val adRequest: AdRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
@@ -70,6 +70,11 @@ class ValuesFragment : Fragment() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 val percentText: String = percentTip.text.toString()
+                if (!isValid(percentText)) {
+                    Toast.makeText(context,
+                                   "Only use numeric characters and '.'",
+                                   Toast.LENGTH_SHORT).show()
+                }
 
                 val bundle = Bundle()
                 bundle.putString(FirebaseAnalytics.Param.VALUE,
@@ -86,31 +91,51 @@ class ValuesFragment : Fragment() {
         return view
     }
 
+    private fun isValid(value: String): Boolean {
+        val validChars = charArrayOf('1',
+                                     '2',
+                                     '3',
+                                     '4',
+                                     '5',
+                                     '6',
+                                     '7',
+                                     '8',
+                                     '9',
+                                     '0',
+                                     '.')
+        value.toCharArray()
+                .filter { it !in validChars }
+                .forEach { return false }
+        return true
+    }
+
     private fun Double.roundTo2DecimalPlaces() =
             BigDecimal(this).setScale(2,
                                       BigDecimal.ROUND_HALF_UP).toDouble()
 
     fun makeCalc() {
-        var fBill = 0.0
-        var fPercent = 0.0
-        if (bill.text.toString() != "") {
-            fBill = bill.text.toString().toDouble()
+        var bill = 0.0
+        var percent = 0.0
+        if (this.bill.text.toString() != "") {
+            bill = this.bill.text.toString().toDouble()
         }
         if (percentTip.text.toString() != "") {
-            fPercent = percentTip.text.toString().toDouble() / 100
+            percent = percentTip.text.toString().toDouble() / 100
         }
-        val fTip: Double = (fBill * fPercent).roundTo2DecimalPlaces()
-        val fTotal: Double = (fTip + fBill).roundTo2DecimalPlaces()
-        val tipText = "\$$fTip"
-        val totalText = "\$$fTotal"
-        tip.text = tipText
-        total.text = totalText
+        val tip: Double = (bill * percent).roundTo2DecimalPlaces()
+        val total: Double = (tip + bill).roundTo2DecimalPlaces()
+        if (total > 0.0) {
+            val summaryText = getString(R.string.summary).format(bill,
+                                                                 tip,
+                                                                 total)
+            summary.text = summaryText
+        }
 
         val bundle = Bundle()
         bundle.putDouble("tip",
-                         fTip)
-        bundle.putDouble("total",
-                         fTotal)
+                         tip)
+        bundle.putDouble("summary",
+                         total)
         fbAnalytics.logEvent("calculate_totals",
                              bundle)
     }

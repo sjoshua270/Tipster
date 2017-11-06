@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Tipster</string>
     <string name="bill_hint">Bill</string>
-    <string name="percent_hint">Tip</string>
-    <string name="total">Total</string>
+    <string name="percent_hint">Tip %</string>
+    <string name="summary">Your bill was $%.2f. With a tip of $%.2f, your total is $%.2f</string>
     <string name="tip">Tip</string>
-    <string name="total_placeholder">$6.00</string>
+    <string name="total_placeholder">Enter your bill and desired tip percentage to calculate your totals</string>
     <string name="tip_placeholder">$1.00</string>
     <string name="banner_ad_unit_id">ca-app-pub-8930863167049094/4301412831</string>
 </resources>
