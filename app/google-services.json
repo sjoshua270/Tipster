@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "438771426157",
+    "firebase_url": "https://tipster-53fde.firebaseio.com",
+    "project_id": "tipster-53fde",
+    "storage_bucket": "tipster-53fde.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:438771426157:android:22686725bbb14b79",
+        "android_client_info": {
+          "package_name": "com.rethink.tipster"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "438771426157-nf78buferdglvgon592b1bb2mos08jc8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rethink.tipster",
+            "certificate_hash": "d7d9d2df2d054ae849a501fbb3e20f2a8c300c28"
+          }
+        },
+        {
+          "client_id": "438771426157-qitj9rbe8804r8nr41ueukpmucrtdua1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0byQl54lRdmQgtig7qrekdn73bwPWYGc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "438771426157-qitj9rbe8804r8nr41ueukpmucrtdua1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
