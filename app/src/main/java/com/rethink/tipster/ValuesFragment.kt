@@ -44,7 +44,7 @@ class ValuesFragment : Fragment() {
         totalView = view.findViewById(R.id.total)
         peopleField = view.findViewById(R.id.people)
         personView = view.findViewById(R.id.person)
-        addPersonButton = view.findViewById(R.id.add_remove)
+        addPersonButton = view.findViewById(R.id.add_person)
         removePersonButton = view.findViewById(R.id.remove_person)
         adView = view.findViewById(R.id.ad_view)
         val adRequest: AdRequest = AdRequest.Builder().build()
