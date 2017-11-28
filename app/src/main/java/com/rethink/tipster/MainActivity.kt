@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        // Don't collect info if this is a debug build
-        FirebaseCrash.setCrashCollectionEnabled(!BuildConfig.DEBUG)
         if (BuildConfig.DEBUG) {
             Toast.makeText(this,
                            "Debug mode active!",
                            Toast.LENGTH_LONG).show()
+            // Don't collect info if this is a debug build
+            FirebaseCrash.setCrashCollectionEnabled(false)
         }
 
         val valuesFrag: Fragment = ValuesFragment()

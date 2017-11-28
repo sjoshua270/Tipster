@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -20,11 +19,13 @@ import java.math.BigDecimal
 class ValuesFragment : Fragment() {
     private val TAG: String = "ValuesFragment"
     private lateinit var fbAnalytics: FirebaseAnalytics
-    private lateinit var bill: EditText
-    private lateinit var percentTip: EditText
-    private lateinit var tip: TextView
-    private lateinit var summary: TextView
+    private lateinit var amountField: EditText
+    private lateinit var percentTipField: EditText
+    private lateinit var tipField: EditText
+    private lateinit var totalView: TextView
     private lateinit var adView: AdView
+    private var appChanged: Boolean = false
+    private var lastEdited: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_values,
@@ -32,18 +33,23 @@ class ValuesFragment : Fragment() {
                                     false)
         fbAnalytics = FirebaseAnalytics.getInstance(context)
 
-        bill = view.findViewById(R.id.bill)
-        percentTip = view.findViewById(R.id.percent)
-        summary = view.findViewById(R.id.summary)
+        amountField = view.findViewById(R.id.amount)
+        percentTipField = view.findViewById(R.id.percent_tip)
+        tipField = view.findViewById(R.id.tip)
+        totalView = view.findViewById(R.id.total)
         adView = view.findViewById(R.id.ad_view)
         val adRequest: AdRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
 
         val prefs: SharedPreferences = activity.getPreferences(Context.MODE_PRIVATE)
-        percentTip.setText(prefs.getString("percent",
-                                           ""))
+        tipField.setText(prefs.getString("tip",
+                                         ""))
+        percentTipField.setText(prefs.getString("percent_tip",
+                                                ""))
+        lastEdited = prefs.getString("last_edited",
+                                     "percent_tip")
 
-        bill.addTextChangedListener(object : TextWatcher {
+        amountField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
             }
 
@@ -51,90 +57,126 @@ class ValuesFragment : Fragment() {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val bundle = Bundle()
-                bundle.putString(FirebaseAnalytics.Param.VALUE,
-                                 p0.toString())
-                fbAnalytics.logEvent("change_bill",
-                                     bundle)
-                makeCalc()
-            }
-
-        })
-
-        percentTip.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                val percentText: String = percentTip.text.toString()
-                if (!isValid(percentText)) {
-                    Toast.makeText(context,
-                                   "Only use numeric characters and '.'",
-                                   Toast.LENGTH_SHORT).show()
+                if (!appChanged) {
+                    val bundle = Bundle()
+                    bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                     p0.toString())
+                    fbAnalytics.logEvent("change_amount",
+                                         bundle)
+                    makeCalc(amountField.id)
                 }
+            }
+        })
 
-                val bundle = Bundle()
-                bundle.putString(FirebaseAnalytics.Param.VALUE,
-                                 percentText)
-                prefs.edit().putString("percent",
-                                       percentText).apply()
-                fbAnalytics.logEvent("change_percent",
-                                     bundle)
-                makeCalc()
+        percentTipField.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
             }
 
-        })
-        makeCalc()
-        return view
-    }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
 
-    private fun isValid(value: String): Boolean {
-        val validChars = charArrayOf('1',
-                                     '2',
-                                     '3',
-                                     '4',
-                                     '5',
-                                     '6',
-                                     '7',
-                                     '8',
-                                     '9',
-                                     '0',
-                                     '.')
-        value.toCharArray()
-                .filter { it !in validChars }
-                .forEach { return false }
-        return true
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (!appChanged) {
+                    val percentText: String = percentTipField.text.toString()
+                    prefs.edit().putString("percent_tip",
+                                           percentText).apply()
+                    lastEdited = "percent_tip"
+                    prefs.edit().putString("last_edited",
+                                           lastEdited).apply()
+
+                    val bundle = Bundle()
+                    bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                     percentText)
+                    fbAnalytics.logEvent("change_percent_tip",
+                                         bundle)
+
+                    makeCalc(percentTipField.id)
+                }
+            }
+        })
+
+        tipField.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (!appChanged) {
+                    val tipText: String = tipField.text.toString()
+                    prefs.edit().putString("tip",
+                                           tipText).apply()
+                    lastEdited = "tip"
+                    prefs.edit().putString("last_edited",
+                                           lastEdited).apply()
+
+                    val bundle = Bundle()
+                    bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                     tipText)
+                    fbAnalytics.logEvent("change_tip",
+                                         bundle)
+
+                    makeCalc(tipField.id)
+                }
+            }
+        })
+        return view
     }
 
     private fun Double.roundTo2DecimalPlaces() =
             BigDecimal(this).setScale(2,
                                       BigDecimal.ROUND_HALF_UP).toDouble()
 
-    fun makeCalc() {
-        var bill = 0.0
-        var percent = 0.0
-        if (this.bill.text.toString() != "") {
-            bill = this.bill.text.toString().toDouble()
+    fun makeCalc(view: Int) {
+        appChanged = true
+        var amount = 0.0
+        var tip = 0.0
+        var percentTip = 0.0
+        if (this.amountField.text.toString() != "") {
+            amount = this.amountField.text.toString().toDouble()
         }
-        if (percentTip.text.toString() != "") {
-            percent = percentTip.text.toString().toDouble() / 100
+        if (tipField.text.toString() != "") {
+            tip = tipField.text.toString().toDouble()
         }
-        val tip: Double = (bill * percent).roundTo2DecimalPlaces()
-        val total: Double = (tip + bill).roundTo2DecimalPlaces()
-        if (total > 0.0) {
-            val summaryText = getString(R.string.summary).format(bill,
-                                                                 tip,
-                                                                 total)
-            summary.text = summaryText
+        if (percentTipField.text.toString() != "") {
+            percentTip = percentTipField.text.toString().toDouble() / 100
         }
+
+        var total = 0.0
+        if (view == amountField.id) {
+            if (lastEdited == "tip") {
+                percentTip = tip / amount * 100
+                percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
+                total = amount + tip
+            } else if (lastEdited == "percent_tip") {
+                tip = amount * percentTip
+                tipField.setText(tip.roundTo2DecimalPlaces().toString())
+                total = amount + tip
+            }
+        }
+        if (view == percentTipField.id) {
+            if (amount > 0.0) {
+                tip = amount * percentTip
+                tipField.setText(tip.roundTo2DecimalPlaces().toString())
+                total = amount + tip
+            }
+        }
+        if (view == tipField.id) {
+            if (amount > 0.0) {
+                percentTip = tip / amount * 100
+                percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
+                total = amount + tip
+            }
+        }
+
+        totalView.text = getString(R.string.usd).format(total)
+        appChanged = false
 
         val bundle = Bundle()
         bundle.putDouble("tip",
                          tip)
-        bundle.putDouble("summary",
+        bundle.putDouble("total",
                          total)
         fbAnalytics.logEvent("calculate_totals",
                              bundle)
