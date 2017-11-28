@@ -10,10 +10,11 @@
     <string name="usd">$%.2f</string>
 
     <string name="total">Total:</string>
-    <string name="total_placeholder">Enter your bill and desired tip to calculate your total</string>
+    <string name="usd_placeholder">$0.0</string>
     <string name="banner_ad_unit_id">ca-app-pub-8930863167049094/4301412831</string>
     <string name="add_person">Add person</string>
     <string name="remove_person">Remove person</string>
     <string name="per_person">Per person:</string>
     <string name="split">Split:</string>
+    <string name="people_placeholder">1</string>
 </resources>
