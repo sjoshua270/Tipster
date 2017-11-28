@@ -162,7 +162,11 @@ class ValuesFragment : Fragment() {
 
         removePersonButton.setOnClickListener {
             var people = peopleField.text.toString().toInt()
-            people -= 1
+            if (people > 1) {
+                people -= 1
+            } else if (people < 1) {
+                people = 1
+            }
             peopleField.setText(people.toString())
         }
         makeCalc(0)
