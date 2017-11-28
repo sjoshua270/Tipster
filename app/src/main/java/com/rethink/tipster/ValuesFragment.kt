@@ -165,6 +165,7 @@ class ValuesFragment : Fragment() {
             people -= 1
             peopleField.setText(people.toString())
         }
+        makeCalc(0)
         return view
     }
 
