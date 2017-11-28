@@ -9,8 +9,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -26,8 +26,8 @@ class ValuesFragment : Fragment() {
     private lateinit var totalView: TextView
     private lateinit var peopleField: EditText
     private lateinit var personView: TextView
-    private lateinit var addPersonButton: ImageButton
-    private lateinit var removePersonButton: ImageButton
+    private lateinit var addPersonButton: Button
+    private lateinit var removePersonButton: Button
     private lateinit var adView: AdView
     private var appChanged: Boolean = false
     private var lastEdited: String = ""
