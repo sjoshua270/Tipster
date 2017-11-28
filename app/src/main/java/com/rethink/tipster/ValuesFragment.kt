@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
@@ -23,6 +24,10 @@ class ValuesFragment : Fragment() {
     private lateinit var percentTipField: EditText
     private lateinit var tipField: EditText
     private lateinit var totalView: TextView
+    private lateinit var peopleField: EditText
+    private lateinit var personView: TextView
+    private lateinit var addPersonButton: ImageButton
+    private lateinit var removePersonButton: ImageButton
     private lateinit var adView: AdView
     private var appChanged: Boolean = false
     private var lastEdited: String = ""
@@ -37,6 +42,10 @@ class ValuesFragment : Fragment() {
         percentTipField = view.findViewById(R.id.percent_tip)
         tipField = view.findViewById(R.id.tip)
         totalView = view.findViewById(R.id.total)
+        peopleField = view.findViewById(R.id.people)
+        personView = view.findViewById(R.id.person)
+        addPersonButton = view.findViewById(R.id.add_remove)
+        removePersonButton = view.findViewById(R.id.remove_person)
         adView = view.findViewById(R.id.ad_view)
         val adRequest: AdRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
@@ -48,6 +57,7 @@ class ValuesFragment : Fragment() {
                                                 ""))
         lastEdited = prefs.getString("last_edited",
                                      "percent_tip")
+        peopleField.setText(1.toString())
 
         amountField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -121,6 +131,40 @@ class ValuesFragment : Fragment() {
                 }
             }
         })
+
+        peopleField.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                if (!appChanged) {
+                    val peopleText: String = peopleField.text.toString()
+
+                    val bundle = Bundle()
+                    bundle.putString(FirebaseAnalytics.Param.VALUE,
+                                     peopleText)
+                    fbAnalytics.logEvent("change_people",
+                                         bundle)
+
+                    makeCalc(peopleField.id)
+                }
+            }
+        })
+
+        addPersonButton.setOnClickListener {
+            var people = peopleField.text.toString().toInt()
+            people += 1
+            peopleField.setText(people.toString())
+        }
+
+        removePersonButton.setOnClickListener {
+            var people = peopleField.text.toString().toInt()
+            people -= 1
+            peopleField.setText(people.toString())
+        }
         return view
     }
 
@@ -133,6 +177,7 @@ class ValuesFragment : Fragment() {
         var amount = 0.0
         var tip = 0.0
         var percentTip = 0.0
+        var people = 1.0
         if (this.amountField.text.toString() != "") {
             amount = this.amountField.text.toString().toDouble()
         }
@@ -142,35 +187,35 @@ class ValuesFragment : Fragment() {
         if (percentTipField.text.toString() != "") {
             percentTip = percentTipField.text.toString().toDouble() / 100
         }
+        if (peopleField.text.toString() != "") {
+            people = peopleField.text.toString().toDouble()
+        }
 
-        var total = 0.0
         if (view == amountField.id) {
             if (lastEdited == "tip") {
                 percentTip = tip / amount * 100
                 percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
-                total = amount + tip
             } else if (lastEdited == "percent_tip") {
                 tip = amount * percentTip
                 tipField.setText(tip.roundTo2DecimalPlaces().toString())
-                total = amount + tip
             }
         }
         if (view == percentTipField.id) {
             if (amount > 0.0) {
                 tip = amount * percentTip
                 tipField.setText(tip.roundTo2DecimalPlaces().toString())
-                total = amount + tip
             }
         }
         if (view == tipField.id) {
             if (amount > 0.0) {
                 percentTip = tip / amount * 100
                 percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
-                total = amount + tip
+
             }
         }
-
+        val total = amount + tip
         totalView.text = getString(R.string.usd).format(total)
+        personView.text = getString(R.string.usd).format(total / people)
         appChanged = false
 
         val bundle = Bundle()
