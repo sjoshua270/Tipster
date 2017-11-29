@@ -15,7 +15,6 @@ import android.widget.TextView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.FirebaseAnalytics
-import java.math.BigDecimal
 
 class ValuesFragment : Fragment() {
     private val TAG: String = "ValuesFragment"
@@ -193,16 +192,12 @@ class ValuesFragment : Fragment() {
         return view
     }
 
-    private fun Double.roundTo2DecimalPlaces() =
-            BigDecimal(this).setScale(2,
-                                      BigDecimal.ROUND_HALF_UP).toDouble()
-
     fun makeCalc(view: Int) {
         appChanged = true
         var amount = 0.0
         var tip = 0.0
         var percentTip = 0.0
-        var people = 1.0
+        var people = 1
         if (this.amountField.text.toString() != "") {
             amount = this.amountField.text.toString().toDouble()
         }
@@ -213,34 +208,36 @@ class ValuesFragment : Fragment() {
             percentTip = percentTipField.text.toString().toDouble() / 100
         }
         if (peopleField.text.toString() != "") {
-            people = peopleField.text.toString().toDouble()
+            people = peopleField.text.toString().toInt()
         }
 
+        val twoDecPlaces = getString(R.string.two_decimal_places)
         if (view == amountField.id) {
             if (lastEdited == "tip" && tip > 0.0) {
                 percentTip = tip / amount * 100
-                percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
+                percentTipField.setText(twoDecPlaces.format(percentTip))
             } else if (lastEdited == "percent_tip" && percentTip > 0.0) {
                 tip = amount * percentTip
-                tipField.setText(tip.roundTo2DecimalPlaces().toString())
+                tipField.setText(twoDecPlaces.format(tip))
             }
         }
         if (view == percentTipField.id) {
             if (amount > 0.0 && percentTip > 0.0) {
                 tip = amount * percentTip
-                tipField.setText(tip.roundTo2DecimalPlaces().toString())
+                tipField.setText(twoDecPlaces.format(tip))
             }
         }
         if (view == tipField.id) {
             if (amount > 0.0 && tip > 0.0) {
                 percentTip = tip / amount * 100
-                percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
+                percentTipField.setText(twoDecPlaces.format(percentTip))
 
             }
         }
         val total = amount + tip
-        totalView.text = getString(R.string.usd).format(total)
-        personView.text = getString(R.string.usd).format(total / people)
+        val usd = getString(R.string.usd)
+        totalView.text = usd.format(total)
+        personView.text = usd.format(total / people)
         appChanged = false
 
         val bundle = Bundle()

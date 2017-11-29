@@ -17,4 +17,5 @@
     <string name="per_person">Per person:</string>
     <string name="split">Split:</string>
     <string name="people_placeholder">1</string>
+    <string name="two_decimal_places">%.2f</string>
 </resources>
