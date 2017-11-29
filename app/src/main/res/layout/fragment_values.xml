@@ -182,6 +182,14 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
+            <Button
+                android:id="@+id/donate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/person_container"
+                android:drawableLeft="@drawable/ic_bitcoin_logo"
+                android:drawableStart="@drawable/ic_bitcoin_logo"
+                android:text="@string/donate" />
         </RelativeLayout>
     </ScrollView>
 

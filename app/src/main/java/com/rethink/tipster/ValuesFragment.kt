@@ -1,5 +1,7 @@
 package com.rethink.tipster
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -12,12 +14,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.firebase.analytics.FirebaseAnalytics
 
+
 class ValuesFragment : Fragment() {
     private val TAG: String = "ValuesFragment"
+    private val BITCOIN_ADDRESS = "339UPamc8GobP5Kt8bPLWxGa1s5SNVsmJz"
     private lateinit var fbAnalytics: FirebaseAnalytics
     private lateinit var amountField: EditText
     private lateinit var percentTipField: EditText
@@ -27,6 +32,7 @@ class ValuesFragment : Fragment() {
     private lateinit var personView: TextView
     private lateinit var addPersonButton: Button
     private lateinit var removePersonButton: Button
+    private lateinit var donateButton: Button
     private lateinit var adView: AdView
     private var appChanged: Boolean = false
     private var lastEdited: String = ""
@@ -45,11 +51,12 @@ class ValuesFragment : Fragment() {
         personView = view.findViewById(R.id.person)
         addPersonButton = view.findViewById(R.id.add_person)
         removePersonButton = view.findViewById(R.id.remove_person)
+        donateButton = view.findViewById(R.id.donate)
         adView = view.findViewById(R.id.ad_view)
         val adRequest: AdRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
 
-        val prefs: SharedPreferences = activity.getPreferences(Context.MODE_PRIVATE)
+        val prefs: SharedPreferences = activity!!.getPreferences(Context.MODE_PRIVATE)
         tipField.setText(prefs.getString("tip",
                                          ""))
         percentTipField.setText(prefs.getString("percent_tip",
@@ -188,6 +195,17 @@ class ValuesFragment : Fragment() {
                 peopleField.setText("1")
             }
         }
+
+        donateButton.setOnClickListener {
+            val clipboard: ClipboardManager = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("donate_tipster",
+                                             BITCOIN_ADDRESS)
+            clipboard.primaryClip = clip
+            Toast.makeText(context,
+                           "Address copied!",
+                           Toast.LENGTH_SHORT).show()
+        }
+
         makeCalc(0)
         return view
     }

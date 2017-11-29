@@ -18,4 +18,5 @@
     <string name="split">Split:</string>
     <string name="people_placeholder">1</string>
     <string name="two_decimal_places">%.2f</string>
+    <string name="donate">Donate</string>
 </resources>
