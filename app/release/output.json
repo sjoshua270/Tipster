@@ -6,9 +6,9 @@
     "apkInfo": {
       "type": "MAIN",
       "splits": [],
-      "versionCode": 1060201
+      "versionCode": 1070000
     },
-    "path": "release-1.6.2-RC1.apk",
+    "path": "release-1.7.0-SNAPSHOT.apk",
     "properties": {
       "packageId": "com.rethink.tipster",
       "split": "",
