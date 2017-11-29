@@ -57,7 +57,8 @@ class ValuesFragment : Fragment() {
                                                 ""))
         lastEdited = prefs.getString("last_edited",
                                      "percent_tip")
-        peopleField.setText(1.toString())
+        peopleField.setText("1")
+        removePersonButton.visibility = View.INVISIBLE
 
         amountField.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
@@ -149,25 +150,44 @@ class ValuesFragment : Fragment() {
                     fbAnalytics.logEvent("change_people",
                                          bundle)
 
+                    if (peopleText != "") {
+                        var people = peopleText.toInt()
+                        if (people < 1) {
+                            people = 1
+                            peopleField.setText(people.toString())
+                        }
+                        if (people == 1) {
+                            removePersonButton.visibility = View.INVISIBLE
+                        } else {
+                            removePersonButton.visibility = View.VISIBLE
+                        }
+                    }
+
                     makeCalc(peopleField.id)
                 }
             }
         })
 
         addPersonButton.setOnClickListener {
-            var people = peopleField.text.toString().toInt()
-            people += 1
-            peopleField.setText(people.toString())
+            if (peopleField.text.toString() != "") {
+                var people = peopleField.text.toString().toInt()
+                people += 1
+                peopleField.setText(people.toString())
+            } else {
+                peopleField.setText("1")
+            }
         }
 
         removePersonButton.setOnClickListener {
-            var people = peopleField.text.toString().toInt()
-            if (people > 1) {
-                people -= 1
-            } else if (people < 1) {
-                people = 1
+            if (peopleField.text.toString() != "") {
+                var people = peopleField.text.toString().toInt()
+                if (people > 1) {
+                    people -= 1
+                }
+                peopleField.setText(people.toString())
+            } else {
+                peopleField.setText("1")
             }
-            peopleField.setText(people.toString())
         }
         makeCalc(0)
         return view
@@ -197,22 +217,22 @@ class ValuesFragment : Fragment() {
         }
 
         if (view == amountField.id) {
-            if (lastEdited == "tip") {
+            if (lastEdited == "tip" && tip > 0.0) {
                 percentTip = tip / amount * 100
                 percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
-            } else if (lastEdited == "percent_tip") {
+            } else if (lastEdited == "percent_tip" && percentTip > 0.0) {
                 tip = amount * percentTip
                 tipField.setText(tip.roundTo2DecimalPlaces().toString())
             }
         }
         if (view == percentTipField.id) {
-            if (amount > 0.0) {
+            if (amount > 0.0 && percentTip > 0.0) {
                 tip = amount * percentTip
                 tipField.setText(tip.roundTo2DecimalPlaces().toString())
             }
         }
         if (view == tipField.id) {
-            if (amount > 0.0) {
+            if (amount > 0.0 && tip > 0.0) {
                 percentTip = tip / amount * 100
                 percentTipField.setText(percentTip.roundTo2DecimalPlaces().toString())
 
